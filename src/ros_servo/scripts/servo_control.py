@@ -7,36 +7,48 @@ import geometry_msgs
 
 import RPi.GPIO as GPIO
 import time
+import signal
+import sys 
+
+def exit_handler(signal, frame):
+        # Ctrl+Cが押されたときにデバイスを初期状態に戻して終了する。
+        print("\nExit")
+        servo.ChangeDutyCycle(2.5)
+        time.sleep(0.5)
+        servo.stop()
+        GPIO.cleanup()
+        sys.exit(0)
+
+# 終了処理用のシグナルハンドラを準備
+signal.signal(signal.SIGINT, exit_handler)
 
 GPIO.setmode(GPIO.BCM)
 
-#GPIO4を制御パルスの出力に設定
-gp_out = 4
+# GPIO 21番を使用
+gp_out = 21
+
 GPIO.setup(gp_out, GPIO.OUT)
+# pwm = GPIO.PWM([チャンネル], [周波数(Hz)])
+servo = GPIO.PWM(gp_out, 50) 
 
-#「GPIO4出力」でPWMインスタンスを作成する。
-#GPIO.PWM( [ピン番号] , [周波数Hz] )
-#SG92RはPWMサイクル:20ms(=50Hz), 制御パルス:0.5ms〜2.4ms, (=2.5%〜12%)。
-servo = GPIO.PWM(gp_out, 50)
+# 初期化
+servo.start(0.0)
 
-#パルス出力開始。　servo.start( [デューティサイクル 0~100%] )
-#とりあえずゼロ指定だとサイクルが生まれないので特に動かないっぽい？
-servo.start(0)
-#time.sleep(1)
+val = [2.5,3.6875,4.875,6.0625,7.25,8.4375,9.625,10.8125,12]
 
-for i in range(3):
-    #デューティサイクルの値を変更することでサーボが回って角度が変わる。
-    servo.ChangeDutyCycle(10)
-    time.sleep(0.5)
+servo.ChangeDutyCycle(val[0])
+time.sleep(0.5)
+servo.ChangeDutyCycle(val[8])
+time.sleep(0.5)
+servo.ChangeDutyCycle(val[0])
+time.sleep(0.5)
 
-    servo.ChangeDutyCycle(1)
-    #time.sleep(0.5)
-
-   # servo.ChangeDutyCycle(12)
-    #time.sleep(0.5)
-
-    #servo.ChangeDutyCycle(7.25)
-    #time.sleep(0.5)
-
-servo.stop()
-GPIO.cleanup()
+while True:
+        for i, dc in enumerate(val):
+                servo.ChangeDutyCycle(dc)
+                print("Angle:" + str(i*22.5)+"  dc = %.4f" % dc) 
+                time.sleep(0.5)
+        for i, dc in enumerate( reversed(val) ):
+                servo.ChangeDutyCycle(dc)
+                print("Angle:" + str(180 - i*22.5)+"  dc = %.4f" % dc) 
+                time.sleep(0.5)
