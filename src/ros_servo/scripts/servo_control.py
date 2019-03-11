@@ -1,14 +1,16 @@
 #!/usr/bin/python
 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import rospy
 import geometry_msgs
 
 import RPi.GPIO as GPIO
 import time
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BCM
 
-#GPIO4を制御パルスの出力に設定
 gp_out = 4
 GPIO.setup(gp_out, GPIO.OUT)
 
