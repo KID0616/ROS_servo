@@ -29,14 +29,14 @@ for i in range(3):
     servo.ChangeDutyCycle(100)
     time.sleep(0.5)
 
-    servo.ChangeDutyCycle(7.25)
-    time.sleep(0.5)
+    #servo.ChangeDutyCycle(7.25)
+    #time.sleep(0.5)
 
-    servo.ChangeDutyCycle(12)
-    time.sleep(0.5)
+   # servo.ChangeDutyCycle(12)
+    #time.sleep(0.5)
 
-    servo.ChangeDutyCycle(7.25)
-    time.sleep(0.5)
+    #servo.ChangeDutyCycle(7.25)
+    #time.sleep(0.5)
 
 servo.stop()
 GPIO.cleanup()
