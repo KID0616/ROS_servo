@@ -8,73 +8,35 @@ import geometry_msgs
 import RPi.GPIO as GPIO
 import time
 
-import signal
-import sys
+GPIO.setmode(GPIO.BCM)
 
+#GPIO4を制御パルスの出力に設定
+gp_out = 4
+GPIO.setup(gp_out, GPIO.OUT)
 
-def rotate_servo(servo, angle):
-    #   0度の位置 0.5 ms / 20 ms * 100 = 2.5 %
-    # 180度の位置 2.4 ms / 20 ms * 100 = 12 %
-    #      変動幅 12% - 2.5% (9.5%)
-    # angle * 9.5 / 180
-    if -90 <= angle <= 90:
-        d = ((angle + 90) * 9.5 / 180) + 2.5
-        servo.ChangeDutyCycle(d)
-    else:
-        raise ValueError("angle")
+#「GPIO4出力」でPWMインスタンスを作成する。
+#GPIO.PWM( [ピン番号] , [周波数Hz] )
+#SG92RはPWMサイクル:20ms(=50Hz), 制御パルス:0.5ms〜2.4ms, (=2.5%〜12%)。
+servo = GPIO.PWM(gp_out, 50)
 
+#パルス出力開始。　servo.start( [デューティサイクル 0~100%] )
+#とりあえずゼロ指定だとサイクルが生まれないので特に動かないっぽい？
+servo.start(0)
+#time.sleep(1)
 
-def init_servo(gpios):
-    """
-    初期化します。gpiosは利用するGPIOをLISTで指定してください。
-    :param gpios: GPIO番号(LIST)
-    :return: GPIO.PWM (List)
-    """
-    pwms = []
-    GPIO.setmode(GPIO.BCM)
-    if isinstance(gpios, list):
-        for gpio in gpios:
-            GPIO.setup(gpio, GPIO.OUT)
+for i in range(3):
+    #デューティサイクルの値を変更することでサーボが回って角度が変わる。
+    servo.ChangeDutyCycle(2.5)
+    time.sleep(0.5)
 
-            s = GPIO.PWM(gpio, 50)
-            s.start(0.0)
-            pwms.append(s)
-    else:
-        raise Exception("gpios isn't list object.")
+    servo.ChangeDutyCycle(7.25)
+    time.sleep(0.5)
 
-    return pwms
+    servo.ChangeDutyCycle(12)
+    time.sleep(0.5)
 
+    servo.ChangeDutyCycle(7.25)
+    time.sleep(0.5)
 
-if __name__ == "__main__":
-    # GPIO 12番を使用
-    GPIO_12 = 12
-
-    # 初期化
-    pwms = init_servo([GPIO_12])
-
-    try:
-        # -90°の位置まで動かし3秒停止します。
-        rotate_servo(pwms[0], -90)
-        time.sleep(3)
-
-        # 0°の位置まで動かし3秒停止します。
-        rotate_servo(pwms[0], 0)
-        time.sleep(3)
-
-        # 90°の位置まで動かし3秒停止します。
-        rotate_servo(pwms[0], 90)
-        time.sleep(3)
-
-        for mm in range(4):
-            # -90°の位置まで動かします。
-            rotate_servo(pwms[0], -90)
-            time.sleep(2)
-            for i in range(-90, 91):
-                # -90～90°まで20ミリ秒毎に動かします。
-                rotate_servo(pwms[0], i)
-                time.sleep(0.02)
-
-    except KeyboardInterrupt as ki:
-        # サーボの動作を停止します。
-        pwms[0].stop()
-        GPIO.cleanup()
+servo.stop()
+GPIO.cleanup()
