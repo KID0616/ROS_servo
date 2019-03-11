@@ -1,0 +1,2 @@
+ros_servo
+-DCATKIN_DEVEL_PREFIX=/home/kid/ROS_servo/devel -DCMAKE_INSTALL_PREFIX=/home/kid/ROS_servo/install -G Unix Makefiles

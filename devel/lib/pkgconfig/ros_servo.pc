@@ -1,0 +1,8 @@
+prefix=/home/kid/ROS_servo/devel
+
+Name: ros_servo
+Description: Description of ros_servo
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/kid/ROS_servo/devel/lib -lros_servo
+Requires: geometry_msgs roscpp rospy std_msgs
