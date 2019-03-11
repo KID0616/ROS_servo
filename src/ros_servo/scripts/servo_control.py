@@ -1,7 +1,6 @@
 #!/usr/bin/python
-
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# license removed for brevity
 
 import rospy
 import geometry_msgs
