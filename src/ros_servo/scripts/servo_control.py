@@ -29,7 +29,7 @@ for i in range(3):
     servo.ChangeDutyCycle(100)
     time.sleep(0.5)
 
-    servo.ChangeDutyCycle(0)
+    servo.ChangeDutyCycle(1)
     #time.sleep(0.5)
 
    # servo.ChangeDutyCycle(12)
